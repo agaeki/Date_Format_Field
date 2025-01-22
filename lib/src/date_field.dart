@@ -1,6 +1,8 @@
 import 'package:date_format_field/src/formater.dart';
 import 'package:flutter/material.dart';
 
+import 'package:intl/intl.dart';
+
 /// [DateFormatType] enum specifies the formating option for the date format
 /// field.
 ///
@@ -18,6 +20,7 @@ enum DateFormatType {
   type2, // 12/02/2022
   type3, // 12-02-22
   type4, // 12-02-2022
+  typeFormatString
 }
 
 /// Base class for [DateFormatField]
@@ -49,6 +52,7 @@ class DateFormatField extends StatefulWidget {
     super.key,
     required this.onComplete,
     required this.type,
+    this.formatString,
     this.addCalendar = true,
     this.decoration,
     this.controller,
@@ -66,7 +70,9 @@ class DateFormatField extends StatefulWidget {
   /// [DateFormatType] is an enum for specifying the type
   final DateFormatType type;
 
-  /// [onSubmit] returns a nullable Datetime object
+  final String? formatString;
+
+  /// [onComplete] returns a nullable Datetime object
   ///
   /// Returns null when the datetime field is not complete
   /// Returns a datetime object when the field has been completed
@@ -142,6 +148,9 @@ class _DateFormatFieldState extends State<DateFormatField> {
       case DateFormatType.type4:
         completeDate = Formater.type4(value, _dobFormater);
         break;
+      case DateFormatType.typeFormatString:
+        completeDate = Formater.typeFormatString(value, widget.formatString!, _dobFormater);
+        break;
       default:
     }
     setState(() {
@@ -176,6 +185,9 @@ class _DateFormatFieldState extends State<DateFormatField> {
         case DateFormatType.type4:
           inputText =
               '${padDayMonth(picked.day)}-${padDayMonth(picked.month)}-${picked.year}';
+          break;
+        case DateFormatType.typeFormatString:
+          inputText = DateFormat(widget.formatString).format(picked);
           break;
         default:
           inputText = '';
