@@ -22,7 +22,7 @@ enum DateFormatType {
 
 /// Base class for [DateFormatField]
 ///
-/// [DateFormtField] automatically adds serparators to a custom datefield.
+/// [DateFormatField] automatically adds separators to a custom datefield.
 /// Specify the type of separators using the [DateFormatType] enumerators
 ///
 /// Required inputs are:
@@ -30,7 +30,7 @@ enum DateFormatType {
 /// [type] -> specifies the type of formating option
 ///
 /// [onComplete] -> function providing a nullable [DateTime] object of your
-/// selected date. The [onComplete] Datetime parameter remains null untill the
+/// selected date. The [onComplete] DateTime parameter remains null until the
 /// [DateFormatField] has been filled as required by the [DateFormatType] then
 /// it returns a [DateTime] object based on your input.
 ///
@@ -42,7 +42,7 @@ enum DateFormatType {
 ///
 /// [decoration] -> this is the input for styling the [DateFormatField] this
 /// is the same as the [InputDecoration] class for flutter default [TextFields]
-/// so all styling on Textfield applies same here.
+/// so all styling on TextField applies same here.
 
 class DateFormatField extends StatefulWidget {
   const DateFormatField({
@@ -55,6 +55,7 @@ class DateFormatField extends StatefulWidget {
     this.initialDate,
     this.firstDate,
     this.lastDate,
+    this.initialTime,
     this.focusNode,
   });
 
@@ -66,10 +67,10 @@ class DateFormatField extends StatefulWidget {
   /// [DateFormatType] is an enum for specifying the type
   final DateFormatType type;
 
-  /// [onSubmit] returns a nullable Datetime object
+  /// [onSubmit] returns a nullable DateTime object
   ///
   /// Returns null when the datetime field is not complete
-  /// Returns a datetime object when the field has been completed
+  /// Returns a DateTime object when the field has been completed
   final Function(DateTime?) onComplete;
 
   /// [addCalendar] sets a button that allows the selection of date from a
@@ -85,6 +86,8 @@ class DateFormatField extends StatefulWidget {
   /// [firstDate] set first date show in date time picker
   /// the default value is 1000-0-0
   final DateTime? firstDate;
+
+  final TimeOfDay? initialTime;
 
   /// [focusNode] set focusNode for DateFormatField
   /// the default value is 3000-0-0
@@ -145,7 +148,7 @@ class _DateFormatFieldState extends State<DateFormatField> {
       default:
     }
     setState(() {
-      // update the datetime
+      // update the DateTime
       widget.onComplete(completeDate);
     });
   }
@@ -176,6 +179,41 @@ class _DateFormatFieldState extends State<DateFormatField> {
         case DateFormatType.type4:
           inputText =
               '${padDayMonth(picked.day)}-${padDayMonth(picked.month)}-${picked.year}';
+          break;
+        default:
+          inputText = '';
+      }
+      setState(() {
+        _dobFormater.text = inputText;
+      });
+      widget.onComplete(picked);
+    }
+  }
+
+  Future<void> pickTime() async {
+    /// pick the date directly from the screen
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: widget.initialTime ?? const TimeOfDay(hour: 0, minute: 0),
+    );
+    if (picked != null) {
+      String inputText;
+      switch (widget.type) {
+        case DateFormatType.type1:
+          inputText =
+          '${padDayMonth(picked.day)}/${padDayMonth(picked.month)}/${picked.year % 100}';
+          break;
+        case DateFormatType.type2:
+          inputText =
+          '${padDayMonth(picked.day)}/${padDayMonth(picked.month)}/${picked.year}';
+          break;
+        case DateFormatType.type3:
+          inputText =
+          '${padDayMonth(picked.day)}-${padDayMonth(picked.month)}-${picked.year % 100}';
+          break;
+        case DateFormatType.type4:
+          inputText =
+          '${padDayMonth(picked.day)}-${padDayMonth(picked.month)}-${picked.year}';
           break;
         default:
           inputText = '';

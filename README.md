@@ -86,7 +86,7 @@ DateFormatField(
 
 ### Getting data
 
-The `onComplete` call back function returns a `Datetime` nullable object containing the result from the `DateFormatField`.
+The `onComplete` call back function returns a `DateTime` nullable object containing the result from the `DateFormatField`.
 
 The response from the call back returns null when ever the field is not complete but when the entry for the date input is complete, it returns true.
 
@@ -158,6 +158,10 @@ DateFormatField(
 ```
 
 <!-- <img src="https://github.com/AnthonyAniobi/Date_Format_Field/blob/main/screenshots/bmc_logo.png?raw=true" width="350px"> -->
+
+## Todo
+- [ ] Time support in picker
+- [ ] Time support in formatter
 
 ## Support the package
 

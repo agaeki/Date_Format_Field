@@ -15,7 +15,7 @@
 
 ## 0.0.3
 
-- Added `onComplete` callback to get `Datetime`
+- Added `onComplete` callback to get `DateTime`
 - Added calendar widget to select widget
 
 ## 0.0.2
@@ -26,6 +26,6 @@
 
 ## 0.0.1
 
-- Set datetime formater textfield
+- Set DateTime formater textfield
 - Set formater for `type1`, `type2`, `type3`, `type4`.
 - Add value notifier for datetime

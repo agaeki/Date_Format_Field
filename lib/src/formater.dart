@@ -20,11 +20,11 @@ class Formater {
   }
 
   static void _typeTemplate(String input, TextEditingController controller,
-      String seperator, int lastIndex) {
+      String separator, int lastIndex) {
     switch (input.length) {
       case 1:
         if (_parseInt(input) > 3) {
-          controller.text = '0$input$seperator';
+          controller.text = '0$input$separator';
         }
         break;
       case 2:
@@ -33,10 +33,10 @@ class Formater {
         }
         break;
       case 3:
-        if (input[2] != seperator) {
+        if (input[2] != separator) {
           controller.text = int.parse(input[2]) <= 1
-              ? '${input.substring(0, 2)}$seperator${input[2]}'
-              : '${input.substring(0, 2)}${seperator}0${input[2]}$seperator';
+              ? '${input.substring(0, 2)}$separator${input[2]}'
+              : '${input.substring(0, 2)}${separator}0${input[2]}$separator';
         }
         break;
       case 4:
@@ -48,8 +48,8 @@ class Formater {
         }
         break;
       case 6:
-        if (input[5] != seperator) {
-          controller.text = '${input.substring(0, 5)}$seperator${input[5]}';
+        if (input[5] != separator) {
+          controller.text = '${input.substring(0, 5)}$separator${input[5]}';
         }
         break;
       default:
