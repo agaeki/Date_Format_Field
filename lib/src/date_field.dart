@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
 
-/// [DateFormatType] enum specifies the formating option for the date format
+/// [DateFormatType] enum specifies the formatting option for the date format
 /// field.
 ///
-/// example:
+/// Example:
 ///
 /// The date -> 2nd November 2022 is displayed in the different types as:
 ///
@@ -20,7 +20,7 @@ enum DateFormatType {
   type2, // 12/02/2022
   type3, // 12-02-22
   type4, // 12-02-2022
-  typeFormatString
+  typeFormatString // Formatted using https://pub.dev/documentation/intl/latest/intl/DateFormat-class.html
 }
 
 /// Base class for [DateFormatField]
@@ -30,7 +30,7 @@ enum DateFormatType {
 ///
 /// Required inputs are:
 ///
-/// [type] -> specifies the type of formating option
+/// [type] -> specifies the type of formatting option
 ///
 /// [onComplete] -> function providing a nullable [DateTime] object of your
 /// selected date. The [onComplete] DateTime parameter remains null until the
@@ -59,7 +59,6 @@ class DateFormatField extends StatefulWidget {
     this.initialDate,
     this.firstDate,
     this.lastDate,
-    this.initialTime,
     this.focusNode,
   });
 
@@ -71,9 +70,12 @@ class DateFormatField extends StatefulWidget {
   /// [DateFormatType] is an enum for specifying the type
   final DateFormatType type;
 
-  final String? formatString = null;
+  /// [formatString] is the string that will be used to format the date/time
+  /// See https://pub.dev/documentation/intl/latest/intl/DateFormat-class.html for
+  /// list of accepted characters.
+  final String? formatString;
 
-  /// [onComplete] returns a nullable Datetime object
+  /// [onComplete] returns a nullable DateTime object
   ///
   /// Returns null when the datetime field is not complete
   /// Returns a DateTime object when the field has been completed
@@ -93,8 +95,6 @@ class DateFormatField extends StatefulWidget {
   /// the default value is 1000-0-0
   final DateTime? firstDate;
 
-  final TimeOfDay? initialTime;
-
   /// [focusNode] set focusNode for DateFormatField
   /// the default value is 3000-0-0
   final FocusNode? focusNode;
@@ -108,7 +108,6 @@ class DateFormatField extends StatefulWidget {
 
 class _DateFormatFieldState extends State<DateFormatField> {
   late final TextEditingController _dobFormater;
-
   late DateTime initialDate;
 
   @override
@@ -163,7 +162,7 @@ class _DateFormatFieldState extends State<DateFormatField> {
   }
 
   void formatInput(String value) {
-    /// formater for the text input field
+    /// formatter for the text input field
     DateTime? completeDate;
     switch (widget.type) {
       case DateFormatType.type1:
@@ -184,14 +183,13 @@ class _DateFormatFieldState extends State<DateFormatField> {
       default:
     }
     setState(() {
-      // Do some mangling to ensure we store the correct date and time
+      // Do some mangling to ensure we combine the chosen date and time
       final chosenTime = TimeOfDay.fromDateTime(completeDate ?? DateTime.now());
       final newDate = completeDate ?? DateTime.now();
       initialDate = DateTime(newDate.year, newDate.month, newDate.day, chosenTime.hour, chosenTime.minute);
 
       // update the datetime
       widget.onComplete(initialDate);
-
     });
   }
 
@@ -240,7 +238,7 @@ class _DateFormatFieldState extends State<DateFormatField> {
   }
 
   Future<void> pickTime() async {
-    /// pick the date directly from the screen
+    /// pick the time directly from the screen
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(initialDate),
@@ -261,41 +259,6 @@ class _DateFormatFieldState extends State<DateFormatField> {
       });
 
       widget.onComplete(initialDate);
-    }
-  }
-
-  Future<void> pickTime() async {
-    /// pick the date directly from the screen
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: widget.initialTime ?? const TimeOfDay(hour: 0, minute: 0),
-    );
-    if (picked != null) {
-      String inputText;
-      switch (widget.type) {
-        case DateFormatType.type1:
-          inputText =
-          '${padDayMonth(picked.day)}/${padDayMonth(picked.month)}/${picked.year % 100}';
-          break;
-        case DateFormatType.type2:
-          inputText =
-          '${padDayMonth(picked.day)}/${padDayMonth(picked.month)}/${picked.year}';
-          break;
-        case DateFormatType.type3:
-          inputText =
-          '${padDayMonth(picked.day)}-${padDayMonth(picked.month)}-${picked.year % 100}';
-          break;
-        case DateFormatType.type4:
-          inputText =
-          '${padDayMonth(picked.day)}-${padDayMonth(picked.month)}-${picked.year}';
-          break;
-        default:
-          inputText = '';
-      }
-      setState(() {
-        _dobFormater.text = inputText;
-      });
-      widget.onComplete(picked);
     }
   }
 
