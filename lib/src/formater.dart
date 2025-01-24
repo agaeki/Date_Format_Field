@@ -106,5 +106,6 @@ class Formater {
     if (input.length >= maxLength - 1) {
       return DateFormat(formatString).tryParse(input);
     }
+    return null;
   }
 }
