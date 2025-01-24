@@ -50,8 +50,9 @@ enum DateFormatType {
 class DateFormatField extends StatefulWidget {
   const DateFormatField({
     super.key,
-    required this.onComplete,
+    required this.onCompleteDate,
     required this.type,
+    this.onCompleteTime,
     this.formatString,
     this.addCalendar = true,
     this.decoration,
@@ -72,11 +73,17 @@ class DateFormatField extends StatefulWidget {
 
   final String? formatString;
 
-  /// [onComplete] returns a nullable Datetime object
+  /// [onCompleteDate] returns a nullable Datetime object
   ///
   /// Returns null when the datetime field is not complete
   /// Returns a datetime object when the field has been completed
-  final Function(DateTime?) onComplete;
+  final Function(DateTime?) onCompleteDate;
+
+  /// [onCompleteTime] returns a nullable TimeOfDay object
+  ///
+  /// Returns null when the datetime field is not complete
+  /// Returns a datetime object when the field has been completed
+  final Function(TimeOfDay?)? onCompleteTime;
 
   /// [addCalendar] sets a button that allows the selection of date from a
   /// calendar pop up
@@ -106,9 +113,12 @@ class DateFormatField extends StatefulWidget {
 class _DateFormatFieldState extends State<DateFormatField> {
   late final TextEditingController _dobFormater;
 
+  late final DateTime initialDate;
+
   @override
   void initState() {
     _dobFormater = widget.controller ?? TextEditingController();
+    initialDate = widget.initialDate ?? DateTime.now();
     super.initState();
   }
 
@@ -154,8 +164,14 @@ class _DateFormatFieldState extends State<DateFormatField> {
       default:
     }
     setState(() {
+      // Do some mangling to ensure we store the correct date and time
+      final chosenTime = TimeOfDay.fromDateTime(initialDate);
+      final newDate = completeDate ?? DateTime.now();
+      initialDate = DateTime(newDate.year, newDate.month, newDate.day, chosenTime.hour, chosenTime.minute);
+
       // update the datetime
-      widget.onComplete(completeDate);
+      widget.onCompleteDate(completeDate);
+
     });
   }
 
@@ -195,7 +211,36 @@ class _DateFormatFieldState extends State<DateFormatField> {
       setState(() {
         _dobFormater.text = inputText;
       });
-      widget.onComplete(picked);
+      // Do some mangling to ensure we store the correct date and time
+      final chosenTime = TimeOfDay.fromDateTime(initialDate);
+      final newDate = picked;
+      initialDate = DateTime(newDate.year, newDate.month, newDate.day, chosenTime.hour, chosenTime.minute);
+
+      widget.onCompleteDate(picked);
+    }
+  }
+
+  Future<void> pickTime() async {
+    /// pick the date directly from the screen
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(widget.initialDate ?? DateTime.now()),
+    );
+    if (picked != null) {
+      String inputText;
+      switch (widget.type) {
+        case DateFormatType.typeFormatString:
+          inputText = DateFormat(widget.formatString).format(picked);
+          break;
+        default:
+          inputText = '';
+      }
+      setState(() {
+        _dobFormater.text = inputText;
+      });
+      if (widget.onCompleteTime != null) {
+        widget.onCompleteTime!(picked);
+      }
     }
   }
 
