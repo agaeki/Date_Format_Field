@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Formater {
   static int _parseInt(String input) {
@@ -95,6 +96,15 @@ class Formater {
     _typeTemplate(input, controller, '-', maxLength);
     if (input.length >= maxLength - 1) {
       return _parseDateTimeLong(input);
+    }
+    return null;
+  }
+
+  static DateTime? typeFormatString(String input, String formatString, TextEditingController controller) {
+    int maxLength = formatString.length;
+    _typeTemplate(input, controller, '-', maxLength);
+    if (input.length >= maxLength - 1) {
+      return DateFormat(formatString).tryParse(input);
     }
     return null;
   }
